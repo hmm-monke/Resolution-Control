@@ -1,9 +1,8 @@
-package io.github.ultimateboomer.resolutioncontrol.util;
+package cc.flawcra.resolutioncontrol.util;
 
-import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
+import cc.flawcra.resolutioncontrol.ResolutionControlMod;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
-import net.minecraft.client.MinecraftClient;
 
 public class DynamicResolutionHandler {
     public static final DynamicResolutionHandler INSTANCE = new DynamicResolutionHandler();

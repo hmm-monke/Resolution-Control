@@ -1,8 +1,8 @@
-package io.github.ultimateboomer.resolutioncontrol.mixin;
+package cc.flawcra.resolutioncontrol.mixin;
 
+import cc.flawcra.resolutioncontrol.ResolutionControlMod;
+import cc.flawcra.resolutioncontrol.util.Config;
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
-import io.github.ultimateboomer.resolutioncontrol.util.Config;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.math.MathHelper;

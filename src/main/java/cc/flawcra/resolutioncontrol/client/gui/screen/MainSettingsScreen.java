@@ -1,12 +1,11 @@
-package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
+package cc.flawcra.resolutioncontrol.client.gui.screen;
 
-import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
-import io.github.ultimateboomer.resolutioncontrol.util.RCUtil;
+import cc.flawcra.resolutioncontrol.ResolutionControlMod;
+import cc.flawcra.resolutioncontrol.util.RCUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
@@ -17,8 +16,6 @@ import org.lwjgl.glfw.GLFW;
 
 @SuppressWarnings("FieldCanBeLocal")
 public final class MainSettingsScreen extends SettingsScreen {
-    private static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
-
     private static final float[] scaleValues = {0.0f, 0.01f, 0.025f, 0.05f, 0.1f, 0.25f, 0.5f, 0.75f, 1.0f,
             1.25f, 1.5f, 2.0f, 3.0f, 4.0f, 6.0f, 8.0f};
 

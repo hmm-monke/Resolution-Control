@@ -1,4 +1,4 @@
-package io.github.ultimateboomer.resolutioncontrol.util;
+package cc.flawcra.resolutioncontrol.util;
 
 public final class Config {
 	public float scaleFactor = 1.0f;

@@ -1,9 +1,8 @@
-package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
+package cc.flawcra.resolutioncontrol.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;

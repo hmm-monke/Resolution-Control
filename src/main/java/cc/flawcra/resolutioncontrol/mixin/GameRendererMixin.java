@@ -1,11 +1,11 @@
-package io.github.ultimateboomer.resolutioncontrol.mixin;
+package cc.flawcra.resolutioncontrol.mixin;
 
+import cc.flawcra.resolutioncontrol.ResolutionControlMod;
 import net.minecraft.client.render.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {

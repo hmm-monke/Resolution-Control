@@ -1,9 +1,9 @@
-package io.github.ultimateboomer.resolutioncontrol.util;
+package cc.flawcra.resolutioncontrol.util;
 
+import cc.flawcra.resolutioncontrol.ResolutionControlMod;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.client.MinecraftClient;
-import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 
 import java.io.*;
 

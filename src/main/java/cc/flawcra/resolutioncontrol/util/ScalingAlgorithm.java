@@ -1,4 +1,4 @@
-package io.github.ultimateboomer.resolutioncontrol.util;
+package cc.flawcra.resolutioncontrol.util;
 
 import net.minecraft.text.Text;
 import org.lwjgl.opengl.GL11;

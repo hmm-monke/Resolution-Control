@@ -1,6 +1,6 @@
-package io.github.ultimateboomer.resolutioncontrol.mixin;
+package cc.flawcra.resolutioncontrol.mixin;
 
-import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
+import cc.flawcra.resolutioncontrol.ResolutionControlMod;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;

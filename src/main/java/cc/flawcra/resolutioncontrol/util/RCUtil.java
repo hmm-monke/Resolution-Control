@@ -1,4 +1,4 @@
-package io.github.ultimateboomer.resolutioncontrol.util;
+package cc.flawcra.resolutioncontrol.util;
 
 import java.io.File;
 import java.io.IOException;
