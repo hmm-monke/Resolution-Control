@@ -17,7 +17,7 @@ loom {
 
 repositories {
 	maven {
-		url "https://repo.flawcra.cc/mirrors"
+		url "https://nexus.flawcra.cc/repository/mirrors/"
 	}
 }
 

@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -75,6 +76,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 	private int lastWidth;
 	private int lastHeight;
+	public boolean hasRun = false;
 	
 	@Override
 	public void onInitialize() {
@@ -120,6 +122,20 @@ public class ResolutionControlMod implements ModInitializer {
 		ServerWorldEvents.LOAD.register((server, world) -> {
 			if (ConfigHandler.instance.getConfig().enableDynamicResolution) {
 				DynamicResolutionHandler.INSTANCE.reset();
+			}
+		});
+
+		WorldRenderEvents.START.register(ctx -> {
+			if (!hasRun) {
+				resizeMinecraftFramebuffers();
+				LOGGER.info("Resized Minecraft Framebuffers on World join.");
+				hasRun = true;
+			}
+		});
+
+		ClientTickEvents.END_CLIENT_TICK.register(ctx -> {
+			if (ctx.world == null && hasRun) {
+				hasRun = false; // Reset the flag
 			}
 		});
 
@@ -376,7 +392,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 		resize(framebuffer);
 		resize(client.worldRenderer.getEntityOutlinesFramebuffer());
-//		resizeMinecraftFramebuffers();
+		//resizeMinecraftFramebuffers();
 
 		calculateSize();
 	}
@@ -398,7 +414,7 @@ public class ResolutionControlMod implements ModInitializer {
 		if (framebuffer == null) return;
 
 		boolean prev = shouldScale;
-		shouldScale = true;
+
 		if (screenshot) {
 			framebuffer.resize(
 					getScreenshotWidth(),

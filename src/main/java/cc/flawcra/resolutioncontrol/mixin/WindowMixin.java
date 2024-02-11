@@ -16,7 +16,8 @@ public abstract class WindowMixin {
 		if (ResolutionControlMod.getInstance().isScreenshotting()) {
 			ci.setReturnValue(ResolutionControlMod.getInstance().getScreenshotWidth());
 		} else {
-			ci.setReturnValue(scale(ci.getReturnValueI()));
+			var value = scale(ci.getReturnValueI());
+			ci.setReturnValue(value);
 		}
 	}
 	
@@ -25,13 +26,14 @@ public abstract class WindowMixin {
 		if (ResolutionControlMod.getInstance().isScreenshotting()) {
 			ci.setReturnValue(ResolutionControlMod.getInstance().getScreenshotHeight());
 		} else {
-			ci.setReturnValue(scale(ci.getReturnValueI()));
+			var value = scale(ci.getReturnValueI());
+			ci.setReturnValue(value);
 		}
 	}
 	
 	private int scale(int value) {
 		double scaleFactor = ResolutionControlMod.getInstance().getCurrentScaleFactor();
-		return Math.max(MathHelper.ceil((double) value * scaleFactor), 1);
+		return Math.max(MathHelper.ceil(((double) value) * scaleFactor), 1);
 	}
 	
 	@Inject(at = @At("RETURN"), method = "getScaleFactor", cancellable = true)
