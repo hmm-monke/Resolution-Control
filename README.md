@@ -1,6 +1,12 @@
 <p align="center">
 	<img width=256px src=".github/assets/logo.png" />
 </p>
+<p align="center">
+	<a href="https://modrinth.com/mod/resolution-control-plus-plus" target="_blank">
+		<img alt="Modrinth Version" src="https://img.shields.io/modrinth/v/SBESx1ZS?style=flat&logo=modrinth">
+	</a>
+</p>
+
 
 # ResolutionControl++
 
