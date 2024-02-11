@@ -1,9 +1,8 @@
 pluginManagement {
     repositories {
         maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
+            name = 'FlawCra Mirrors'
+            url = 'https://nexus.flawcra.cc/repository/mirrors/'
         }
-        gradlePluginPortal()
     }
 }
