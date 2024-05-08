@@ -2,7 +2,7 @@ pluginManagement {
     repositories {
         maven {
             name = 'FlawCra Mirrors'
-            url = 'https://nexus.flawcra.cc/repository/mirrors/'
+            url = 'https://nexus.flawcra.cc/repository/maven-mirrors/'
         }
     }
 }
