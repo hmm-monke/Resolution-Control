@@ -94,7 +94,7 @@ modrinth {
 	token = System.getenv("MODRINTH_TOKEN")
 	projectId = project.modrinth_id
 	versionNumber = project.mod_version
-	versionName = "${project.getName()} ${project.minecraft_version}-${project.mod_version}"
+	versionName = "${project.getName()} ${project.mod_version}"
 	versionType = isMCVersionNonRelease() ? "beta" : "release"
 	changelog = file("changelog.md").text
 	uploadFile = remapJar
