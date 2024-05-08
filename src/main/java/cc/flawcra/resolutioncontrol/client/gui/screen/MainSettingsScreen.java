@@ -143,7 +143,7 @@ public final class MainSettingsScreen extends SettingsScreen {
     public void tick() {
         if (manualEntry) {
             if (!this.getFocused().equals(entryTextField)) {
-                this.focusOn(entryTextField);
+                this.setFocused(entryTextField);
             }
 
             if (!entryTextField.active) {
@@ -191,7 +191,7 @@ public final class MainSettingsScreen extends SettingsScreen {
             cancelOrResetButton.setMessage(cancelText);
             increaseButton.active = false;
             decreaseButton.active = false;
-            this.focusOn(entryTextField);
+            this.setFocused(entryTextField);
         } else {
             if (!cancel) {
                 String text = entryTextField.getText();
