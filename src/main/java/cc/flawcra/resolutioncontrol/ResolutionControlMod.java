@@ -21,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -32,34 +31,32 @@ public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_NAME = "ResolutionControl++";
 
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
-	
+
 	public static Identifier identifier(String path) {
 		return new Identifier(MOD_ID, path);
 	}
-	
+
 	private static final MinecraftClient client = MinecraftClient.getInstance();
-	
+
 	private static ResolutionControlMod instance;
-	
+
 	public static ResolutionControlMod getInstance() {
 		return instance;
 	}
 
 	private static final String SCREENSHOT_PREFIX = "fb";
 
-	private boolean optifineInstalled;
-	
 	private KeyBinding settingsKey;
 	private KeyBinding screenshotKey;
-	
-	private boolean shouldScale = false;
-	
+
+	private boolean rcShouldScale = false;
+
 	@Nullable
-	private Framebuffer framebuffer;
+	private Framebuffer rcFramebuffer;
 
 	@Nullable
 	private Framebuffer screenshotFrameBuffer;
-	
+
 	@Nullable
 	private Framebuffer clientFramebuffer;
 
@@ -76,12 +73,11 @@ public class ResolutionControlMod implements ModInitializer {
 
 	private int lastWidth;
 	private int lastHeight;
-	public boolean hasRun = false;
-	
+
 	@Override
 	public void onInitialize() {
 		instance = this;
-		
+
 		settingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 				"key.resolutioncontrol.settings",
 				InputUtil.Type.KEYSYM,
@@ -107,7 +103,7 @@ public class ResolutionControlMod implements ModInitializer {
 					client.player.sendMessage(
 							Text.translatable("resolutioncontrol.screenshot.wait"), false);
 				} else {
-					saveScreenshot(framebuffer);
+					saveScreenshot(rcFramebuffer);
 				}
 			}
 		});
@@ -125,21 +121,9 @@ public class ResolutionControlMod implements ModInitializer {
 			}
 		});
 
-		WorldRenderEvents.START.register(ctx -> {
-			if (!hasRun) {
-				resizeMinecraftFramebuffers();
-				LOGGER.info("Resized Minecraft Framebuffers on World join.");
-				hasRun = true;
-			}
-		});
-
-		ClientTickEvents.END_CLIENT_TICK.register(ctx -> {
-			if (ctx.world == null && hasRun) {
-				hasRun = false; // Reset the flag
-			}
-		});
-
-		optifineInstalled = FabricLoader.getInstance().isModLoaded("optifabric");
+		if(FabricLoader.getInstance().isModLoaded("optifabric")) {
+			LOGGER.warn("Optifine was detected. If Minecraft crashes with "+MOD_NAME+" and Optifine installed, there will be no support for you.");
+		}
 	}
 
 	private void saveScreenshot(Framebuffer fb) {
@@ -148,28 +132,28 @@ public class ResolutionControlMod implements ModInitializer {
 				fb,
 				text -> client.player.sendMessage(text, false));
 	}
-	
-	public void setShouldScale(boolean shouldScale) {
-		if (shouldScale == this.shouldScale) return;
 
-//		if (getScaleFactor() == 1) return;
-		
+	public void setRcShouldScale(boolean shouldScale) {
+		if (shouldScale == rcShouldScale) return;
+
+		if (getScaleFactor() == 1) return;
+
 		Window window = getWindow();
-		if (framebuffer == null) {
-			this.shouldScale = true; // so we get the right dimensions
-			framebuffer = new WindowFramebuffer(
+		if (rcFramebuffer == null) {
+			rcShouldScale = true; // so we get the right dimensions
+			rcFramebuffer = new WindowFramebuffer(
 					window.getFramebufferWidth(),
 					window.getFramebufferHeight()
 			);
 			calculateSize();
 		}
 
-		this.shouldScale = shouldScale;
+		rcShouldScale = shouldScale;
 
 		client.getProfiler().swap(shouldScale ? "startScaling" : "finishScaling");
 
 		// swap out framebuffers as needed
-		if (shouldScale) {
+		if (rcShouldScale) {
 			clientFramebuffer = client.getFramebuffer();
 
 			if (screenshot) {
@@ -187,9 +171,8 @@ public class ResolutionControlMod implements ModInitializer {
 
 				screenshotFrameBuffer.beginWrite(true);
 			} else {
-				setClientFramebuffer(framebuffer);
-
-				framebuffer.beginWrite(true);
+				setClientFramebuffer(rcFramebuffer);
+				rcFramebuffer.beginWrite(true);
 			}
 			// nothing on the client's framebuffer yet
 		} else {
@@ -201,17 +184,20 @@ public class ResolutionControlMod implements ModInitializer {
 				saveScreenshot(screenshotFrameBuffer);
 
 				if (!isScreenshotFramebufferAlwaysAllocated()) {
-					screenshotFrameBuffer.delete();
-					screenshotFrameBuffer = null;
+                    if (screenshotFrameBuffer != null) {
+                        screenshotFrameBuffer.delete();
+                    }
+                    screenshotFrameBuffer = null;
 				}
 
 				screenshot = false;
 				resizeMinecraftFramebuffers();
 			} else {
-				framebuffer.draw(
+				rcFramebuffer.draw(
 						window.getFramebufferWidth(),
 						window.getFramebufferHeight()
 				);
+				resizeMinecraftFramebuffers();
 			}
 		}
 
@@ -231,31 +217,28 @@ public class ResolutionControlMod implements ModInitializer {
 		minecraftFramebuffers.add(client.worldRenderer.getParticlesFramebuffer());
 		minecraftFramebuffers.add(client.worldRenderer.getWeatherFramebuffer());
 		minecraftFramebuffers.add(client.worldRenderer.getCloudsFramebuffer());
+		minecraftFramebuffers.add(rcFramebuffer);
 		minecraftFramebuffers.remove(null);
 	}
 
-	public Framebuffer getFramebuffer() {
-		return framebuffer;
-	}
-
 	public void initScreenshotFramebuffer() {
-		if (Objects.nonNull(screenshotFrameBuffer)) screenshotFrameBuffer.delete();
-
-		screenshotFrameBuffer = new WindowFramebuffer(
-				getScreenshotWidth(), getScreenshotHeight()
-		);
+		if (screenshotFrameBuffer != null) {
+			screenshotFrameBuffer.delete();
+		}
+		screenshotFrameBuffer = new WindowFramebuffer(getScreenshotWidth(), getScreenshotHeight());
 	}
-	
+
 	public float getScaleFactor() {
 		return Config.getInstance().scaleFactor;
 	}
-	
+
 	public void setScaleFactor(float scaleFactor) {
-		Config.getInstance().scaleFactor = scaleFactor;
-		
-		updateFramebufferSize();
-		
-		ConfigHandler.instance.saveConfig();
+		if (Config.getInstance().scaleFactor != scaleFactor) {
+			Config.getInstance().scaleFactor = scaleFactor;
+			updateFramebufferSize();
+			ConfigHandler.instance.saveConfig();
+			MinecraftClient.getInstance().player.sendMessage(Text.literal("Scale factor set to " + scaleFactor), false);
+		}
 	}
 
 	public ScalingAlgorithm getUpscaleAlgorithm() {
@@ -303,9 +286,9 @@ public class ResolutionControlMod implements ModInitializer {
 			setDownscaleAlgorithm(ScalingAlgorithm.NEAREST);
 		}
 	}
-	
+
 	public double getCurrentScaleFactor() {
-		return shouldScale ?
+		return rcShouldScale ?
 				Config.getInstance().enableDynamicResolution ?
 						DynamicResolutionHandler.INSTANCE.getCurrentScale() : Config.getInstance().scaleFactor : 1;
 	}
@@ -374,67 +357,83 @@ public class ResolutionControlMod implements ModInitializer {
 				getWindow().getWidth(), getWindow().getHeight(),
 				getWindow().getScaledWidth(), getWindow().getScaledHeight());
 
-//		if (getWindow().getScaledHeight() == lastWidth
-//				|| getWindow().getScaledHeight() == lastHeight)
-//		{
+		if (getWindow().getScaledHeight() == lastWidth
+				|| getWindow().getScaledHeight() == lastHeight)
+		{
 			updateFramebufferSize();
 
 			lastWidth = getWindow().getScaledHeight();
 			lastHeight = getWindow().getScaledHeight();
-//		}
+		}
 
 
 	}
-	
+
 	public void updateFramebufferSize() {
-		if (framebuffer == null)
+		if (rcFramebuffer == null)
 			return;
 
-		resize(framebuffer);
-		resize(client.worldRenderer.getEntityOutlinesFramebuffer());
-		//resizeMinecraftFramebuffers();
+		resizeMinecraftFramebuffers();
 
 		calculateSize();
 	}
 
 	public void resizeMinecraftFramebuffers() {
+		if (!rcShouldScale && !screenshot) return;  // Add conditions to prevent unnecessary resizing
 		initMinecraftFramebuffers();
 		minecraftFramebuffers.forEach(this::resize);
 	}
 
 	public void calculateSize() {
-		currentWidth = framebuffer.textureWidth;
-		currentHeight = framebuffer.textureHeight;
+		if(rcFramebuffer == null) return;
+
+		currentWidth = rcFramebuffer.textureWidth;
+		currentHeight = rcFramebuffer.textureHeight;
 
 		// Framebuffer uses color (4 x 8 = 32 bit int) and depth (32 bit float)
 		estimatedMemory = (long) currentWidth * currentHeight * 8;
 	}
-	
+
 	public void resize(@Nullable Framebuffer framebuffer) {
 		if (framebuffer == null) return;
 
-		boolean prev = shouldScale;
+		boolean prevScaling = rcShouldScale;
+		rcShouldScale = true;  // Assume we need to scale during this operation
+
+		double scaleFactor = getCurrentScaleFactor();  // Retrieve dynamic scale factor
+		int originalWidth = getWindow().getFramebufferWidth();
+		int originalHeight = getWindow().getFramebufferHeight();
+		double aspectRatio = (double) originalWidth / originalHeight;
+
+		int targetWidth, targetHeight;
 
 		if (screenshot) {
-			framebuffer.resize(
-					getScreenshotWidth(),
-					getScreenshotHeight(),
-					MinecraftClient.IS_SYSTEM_MAC
-			);
+			// Use specific dimensions for screenshots if different scaling is needed
+			targetWidth = getScreenshotWidth();
+			targetHeight = getScreenshotHeight();
 		} else {
-			framebuffer.resize(
-					getWindow().getFramebufferWidth(),
-					getWindow().getFramebufferHeight(),
-					MinecraftClient.IS_SYSTEM_MAC
-			);
+			// Apply scaling factor dynamically based on the window size
+			targetWidth = (int) (originalWidth * scaleFactor);
+			targetHeight = (int) (targetWidth / aspectRatio);  // Adjust height based on aspect ratio and new width
 		}
-		shouldScale = prev;
+
+		// Check for minimum dimensions to prevent rendering issues
+		if (targetWidth < 640) targetWidth = 640;  // Minimum width
+		if (targetHeight < 480) targetHeight = 480;  // Minimum height
+
+		// Resize the framebuffer to new dimensions
+		framebuffer.resize(targetWidth, targetHeight, MinecraftClient.IS_SYSTEM_MAC);
+
+		// Restore previous scaling state
+		rcShouldScale = prevScaling;
 	}
-	
+
+
+
 	private Window getWindow() {
 		return client.getWindow();
 	}
-	
+
 	private void setClientFramebuffer(Framebuffer framebuffer) {
 		client.framebuffer = framebuffer;
 	}
@@ -457,10 +456,6 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public boolean isScreenshotting() {
 		return screenshot;
-	}
-
-	public boolean isOptifineInstalled() {
-		return optifineInstalled;
 	}
 
 	public void saveSettings() {

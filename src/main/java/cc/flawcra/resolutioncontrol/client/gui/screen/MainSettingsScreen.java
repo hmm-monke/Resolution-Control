@@ -182,32 +182,23 @@ public final class MainSettingsScreen extends SettingsScreen {
 
     public void setManualEntry(boolean manualEntry, boolean cancel) {
         this.manualEntry = manualEntry;
+        entryTextField.setVisible(manualEntry);
+        entryTextField.setFocused(manualEntry);
+
         if (manualEntry) {
-            entryTextField.setText(String.valueOf(mod.getScaleFactor()));
-            entryTextField.setVisible(true);
-            entryTextField.setSelectionStart(0);
-            entryTextField.setSelectionEnd(entryTextField.getText().length());
-            entryTextField.active = true;
+            entryTextField.setText(String.format("%.2f", mod.getScaleFactor()));
             cancelOrResetButton.setMessage(cancelText);
             increaseButton.active = false;
             decreaseButton.active = false;
-            this.setFocused(entryTextField);
+            setFocused(entryTextField);
         } else {
-            if (!cancel) {
-                String text = entryTextField.getText();
-                if (NumberUtils.isParsable(text)) {
-                    float value = Math.abs(Float.parseFloat(text));
-                    mod.setScaleFactor(value);
-                }
+            if (!cancel && NumberUtils.isParsable(entryTextField.getText())) {
+                float value = Float.parseFloat(entryTextField.getText());
+                mod.setScaleFactor(Math.abs(value));
             }
-
-            entryTextField.setVisible(false);
             setButton.setMessage(setText);
             cancelOrResetButton.setMessage(resetText);
-            increaseButton.active = true;
-            decreaseButton.active = true;
-
-            updateButtons();
+            updateButtons(); // Re-enable buttons based on the current scale factor
         }
     }
 }

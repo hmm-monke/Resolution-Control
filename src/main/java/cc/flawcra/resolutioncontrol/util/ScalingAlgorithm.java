@@ -26,4 +26,10 @@ public enum ScalingAlgorithm {
     public int getId(boolean mipped) {
         return mipped ? idMipped : id;
     }
+
+    // Method to get the next enum value for cycling through the options
+    public ScalingAlgorithm next() {
+        ScalingAlgorithm[] values = values();
+        return values[(this.ordinal() + 1) % values.length];
+    }
 }

@@ -11,27 +11,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class GameRendererMixin {
 	@Inject(at = @At("HEAD"), method = "renderWorld")
 	private void onRenderWorldBegin(CallbackInfo callbackInfo) {
-		if(!ResolutionControlMod.getInstance().hasRun) {
-			ResolutionControlMod.getInstance().hasRun = true;
-			// TODO: Really hacky way to wait for the game to start rendering. This HAS TO be improved.
-			new Thread("ResolutionControlMod") {
-				@Override
-				public void run() {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        ResolutionControlMod.LOGGER.error("Thread interrupted", e);
-                    }
-                    ResolutionControlMod.getInstance().onResolutionChanged();
-				}
-			}.start();
-		}
-
-		ResolutionControlMod.getInstance().setShouldScale(true);
+		ResolutionControlMod.getInstance().setRcShouldScale(true);
 	}
 	
 	@Inject(at = @At("RETURN"), method = "renderWorld")
 	private void onRenderWorldEnd(CallbackInfo callbackInfo) {
-		ResolutionControlMod.getInstance().setShouldScale(false);
+		ResolutionControlMod.getInstance().setRcShouldScale(false);
 	}
 }
