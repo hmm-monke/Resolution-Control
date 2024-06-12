@@ -3,7 +3,7 @@ package cc.flawcra.resolutioncontrol;
 import cc.flawcra.resolutioncontrol.util.*;
 import cc.flawcra.resolutioncontrol.client.gui.screen.MainSettingsScreen;
 import cc.flawcra.resolutioncontrol.client.gui.screen.SettingsScreen;
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ModInitializer; 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
